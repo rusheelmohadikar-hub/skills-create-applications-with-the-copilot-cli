@@ -26,30 +26,57 @@ function divide(a, b) {
   return a / b;
 }
 
-module.exports = { add, subtract, multiply, divide };
+function modulo(a, b) {
+  if (b === 0) {
+    throw new Error('Modulo by zero');
+  }
+  return a % b;
+}
+
+function power(base, exponent) {
+  return Math.pow(base, exponent);
+}
+
+function squareRoot(n) {
+  if (n < 0) {
+    throw new Error('Square root of negative number');
+  }
+  return Math.sqrt(n);
+}
+
+module.exports = { add, subtract, multiply, divide, modulo, power, squareRoot };
 
 // CLI entrypoint: parse command and two numeric arguments
 if (require.main === module) {
   const [cmd, aRaw, bRaw] = process.argv.slice(2);
 
   const usage = `Usage: node calculator.js <operation> <num1> <num2>\n
-Supported operations: add(+), subtract(-), multiply(*), divide(/)\n
-Examples:\n  node calculator.js add 2 3      # 5\n  node calculator.js / 10 2       # 5`;
+Supported operations: add(+), subtract(-), multiply(*), divide(/), modulo(%), power(^/pow), sqrt\n
+Examples:\n  node calculator.js add 2 3      # 5\n  node calculator.js / 10 2       # 5\n  node calculator.js % 10 3       # 1\n  node calculator.js ^ 2 8        # 256\n  node calculator.js sqrt 9       # 3`;
 
-  if (!cmd || aRaw === undefined || bRaw === undefined) {
-    console.error('Error: operation and two numeric arguments are required.\n' + usage);
-    process.exit(1);
-  }
-
-  const a = Number(aRaw);
-  const b = Number(bRaw);
-
-  if (Number.isNaN(a) || Number.isNaN(b)) {
-    console.error('Error: both arguments must be valid numbers.\n' + usage);
+  if (!cmd || aRaw === undefined || (bRaw === undefined && cmd.toLowerCase() !== 'sqrt')) {
+    console.error('Error: operation and required numeric arguments are required.\n' + usage);
     process.exit(1);
   }
 
   const op = cmd.toLowerCase();
+
+  let a;
+  let b;
+  if (op === 'sqrt') {
+    a = Number(aRaw);
+    if (Number.isNaN(a)) {
+      console.error('Error: argument must be a valid number.\n' + usage);
+      process.exit(1);
+    }
+  } else {
+    a = Number(aRaw);
+    b = Number(bRaw);
+    if (Number.isNaN(a) || Number.isNaN(b)) {
+      console.error('Error: both arguments must be valid numbers.\n' + usage);
+      process.exit(1);
+    }
+  }
   try {
     let result;
     switch (op) {
@@ -75,6 +102,28 @@ Examples:\n  node calculator.js add 2 3      # 5\n  node calculator.js / 10 2   
           process.exit(2);
         }
         result = divide(a, b);
+        break;
+      case '%':
+      case 'mod':
+      case 'modulo':
+        if (b === 0) {
+          console.error('Error: modulo by zero is not allowed.');
+          process.exit(2);
+        }
+        result = modulo(a, b);
+        break;
+      case 'power':
+      case 'pow':
+      case '^':
+        result = power(a, b);
+        break;
+      case 'sqrt':
+        try {
+          result = squareRoot(a);
+        } catch (e) {
+          console.error('Error: ' + e.message);
+          process.exit(2);
+        }
         break;
       default:
         console.error(`Error: unknown operation '${cmd}'.\n` + usage);
