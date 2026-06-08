@@ -1,4 +1,4 @@
-const { add, subtract, multiply, divide } = require('../calculator');
+const { add, subtract, multiply, divide, modulo, power, squareRoot } = require('../calculator');
 
 describe('calculator functions', () => {
   describe('addition', () => {
@@ -45,6 +45,47 @@ describe('calculator functions', () => {
 
     test('throws on division by zero', () => {
       expect(() => divide(1, 0)).toThrow('Division by zero');
+    });
+  });
+
+  describe('modulo', () => {
+    test('5 % 2 === 1 (example from image)', () => {
+      expect(modulo(5, 2)).toBe(1);
+    });
+
+    test('handles negative and float values', () => {
+      expect(modulo(10, 3)).toBe(1);
+      expect(modulo(-5, 2)).toBe(-1);
+      expect(modulo(5.5, 2)).toBeCloseTo(1.5);
+    });
+
+    test('throws on modulo by zero', () => {
+      expect(() => modulo(1, 0)).toThrow('Modulo by zero');
+    });
+  });
+
+  describe('power', () => {
+    test('2 ^ 8 === 256 (from earlier example)', () => {
+      expect(power(2, 8)).toBe(256);
+    });
+
+    test('handles negative exponents and zero', () => {
+      expect(power(2, -1)).toBeCloseTo(0.5);
+      expect(power(0, 0)).toBe(1); // Math.pow(0,0) -> 1
+    });
+  });
+
+  describe('squareRoot', () => {
+    test('sqrt 16 === 4 (example from image)', () => {
+      expect(squareRoot(16)).toBe(4);
+    });
+
+    test('handles non-perfect squares', () => {
+      expect(squareRoot(2)).toBeCloseTo(Math.sqrt(2));
+    });
+
+    test('throws on negative input', () => {
+      expect(() => squareRoot(-1)).toThrow('Square root of negative number');
     });
   });
 });
